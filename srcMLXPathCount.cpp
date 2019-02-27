@@ -18,7 +18,7 @@
  *
  * @param srcMLfile filename of srcML file
  * @param xpath XPath expression as string
- * @retval  0 on success
+ * @retval Number of conditions in the srcMLfile
  * @retval -1 Error in apply XPath
  * @retval -2 Invalid argument
  */
