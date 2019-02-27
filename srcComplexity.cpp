@@ -24,7 +24,7 @@ int main(int argc, const char* argv[]) {
     std::string filename = argc == 2 ? argv[1] : "-";
 
     // use the number of conditions to calculate cyclomatic complexity
-    int conditionCount = srcMLXPathCount(argv[1], "count(//src:condition)");
+    int conditionCount = srcMLXPathCount(filename.c_str(), "count(//src:condition)");
     if (conditionCount < 0) {
         std::cerr << "Error in applying xpath\n";
         return 1;
