@@ -10,6 +10,7 @@
 
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+#include "libxml2-unique.hpp"
 
 /** Count of the result of applying the xpath to the srcML file
  * 
@@ -31,12 +32,12 @@ int srcMLXPathCount(const char* srcMLfile, const char* xpath) {
     xmlInitParser();
 
     // open the srcML file with no encoding change and no options
-    std::unique_ptr<xmlDoc, decltype(&xmlFreeDoc)> srcMLdoc(xmlReadFile(srcMLfile, nullptr, 0), xmlFreeDoc);
+    std::unique_ptr<xmlDoc> srcMLdoc(xmlReadFile(srcMLfile, nullptr, 0));
     if (!srcMLdoc)
         return -1;
 
     // create xpath evaluation context
-    std::unique_ptr<xmlXPathContext, decltype(&xmlXPathFreeContext)> xpathCtx(xmlXPathNewContext(srcMLdoc.get()), xmlXPathFreeContext);
+    std::unique_ptr<xmlXPathContext> xpathCtx(xmlXPathNewContext(srcMLdoc.get()));
     if (!xpathCtx)
         return -1;
 
@@ -47,7 +48,7 @@ int srcMLXPathCount(const char* srcMLfile, const char* xpath) {
         return -1;
 
     // evaluate xpath expression
-    std::unique_ptr<xmlXPathObject, decltype(&xmlXPathFreeObject)> xpathResults(xmlXPathEvalExpression(BAD_CAST xpath, xpathCtx.get()), xmlXPathFreeObject);
+    std::unique_ptr<xmlXPathObject> xpathResults(xmlXPathEvalExpression(BAD_CAST xpath, xpathCtx.get()));
     if (!xpathResults)
         return -1;
 
