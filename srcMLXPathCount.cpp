@@ -31,30 +31,50 @@ int srcMLXPathCount(const char* srcMLfile, const char* xpath) {
     xmlInitParser();
 
     // open the srcML file with no encoding change and no options
-    std::unique_ptr<xmlDoc, decltype(&xmlFreeDoc)> srcMLdoc(xmlReadFile(srcMLfile, nullptr, 0), xmlFreeDoc);
-    if (!srcMLdoc)
+    xmlDoc* srcMLdoc(xmlReadFile(srcMLfile, nullptr, 0));
+    if (!srcMLdoc) {
         return -1;
+    }
 
     // create xpath evaluation context
-    std::unique_ptr<xmlXPathContext, decltype(&xmlXPathFreeContext)> xpathCtx(xmlXPathNewContext(srcMLdoc.get()), xmlXPathFreeContext);
-    if (!xpathCtx)
+    xmlXPathContext* xpathCtx(xmlXPathNewContext(srcMLdoc));
+    if (!xpathCtx) {
+        xmlFreeDoc(srcMLdoc);
         return -1;
+    }
 
     // register srcML namespaces
-    if (xmlXPathRegisterNs(xpathCtx.get(), BAD_CAST "src", BAD_CAST "http://www.srcML.org/srcML/src"))
+    if (xmlXPathRegisterNs(xpathCtx, BAD_CAST "src", BAD_CAST "http://www.srcML.org/srcML/src")) {
+        xmlFreeDoc(srcMLdoc);
+        xmlXPathFreeContext(xpathCtx);
         return -1;
-    if (xmlXPathRegisterNs(xpathCtx.get(), BAD_CAST "cpp", BAD_CAST "http://www.srcML.org/srcML/cpp"))
+    }
+    if (xmlXPathRegisterNs(xpathCtx, BAD_CAST "cpp", BAD_CAST "http://www.srcML.org/srcML/cpp")) {
+        xmlFreeDoc(srcMLdoc);
+        xmlXPathFreeContext(xpathCtx);
         return -1;
+    }
 
     // evaluate xpath expression
-    std::unique_ptr<xmlXPathObject, decltype(&xmlXPathFreeObject)> xpathResults(xmlXPathEvalExpression(BAD_CAST xpath, xpathCtx.get()), xmlXPathFreeObject);
-    if (!xpathResults)
+    xmlXPathObject* xpathResults(xmlXPathEvalExpression(BAD_CAST xpath, xpathCtx));
+    if (!xpathResults) {
+        xmlFreeDoc(srcMLdoc);
+        xmlXPathFreeContext(xpathCtx);
         return -1;
+    }
 
     // extract the count
-    int count = xmlXPathCastToNumber(xpathResults.get());
-    if (count < 0)
+    int count = xmlXPathCastToNumber(xpathResults);
+    if (count < 0) {
+        xmlFreeDoc(srcMLdoc);
+        xmlXPathFreeContext(xpathCtx);
+        xmlXPathFreeObject(xpathResults);
         return -1;
+    }
+
+    xmlFreeDoc(srcMLdoc);
+    xmlXPathFreeContext(xpathCtx);
+    xmlXPathFreeObject(xpathResults);
 
     return count;
-}
+} 
