@@ -26,6 +26,11 @@ namespace std {
     };
 
     template<>
+    struct default_delete<xmlXPathContext> {
+        void operator()(xmlXPathContext* xpathCtx) { xmlXPathFreeContext(xpathCtx); }
+    };
+
+    template<>
     struct default_delete<xmlNodeSet> {
         void operator()(xmlNodeSet* nodeSet) { xmlXPathFreeNodeSet(nodeSet); }
     };
