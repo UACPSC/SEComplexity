@@ -10,7 +10,7 @@
 
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
-#include "libxml2-unique.hpp"
+#include "libxml2_unique.hpp"
 
 /** Count of the result of applying the xpath to the srcML file
  * 

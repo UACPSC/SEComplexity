@@ -1,5 +1,5 @@
 /**
- * @file libxml2_utilities.hpp
+ * @file libxml2_unique.hpp
  *
  * Replace default delete for std::unique_ptr with libxml2
  */
