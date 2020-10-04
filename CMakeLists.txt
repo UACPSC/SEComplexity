@@ -9,9 +9,13 @@ message("-- libxml2 include: " ${LIBXML2_INCLUDE_DIR})
 message("-- libxml2 library: " ${LIBXML2_LIBRARY})
 
 # Builds srcComplexity
-add_executable(srcComplexity srcComplexity.cpp srcMLXPathCount.cpp)
-target_include_directories(srcComplexity PUBLIC ${LIBXML2_INCLUDE_DIR})
-target_link_libraries(srcComplexity PUBLIC ${LIBXML2_LIBRARY})
+add_executable(srcComplexity srcComplexity.cpp)
+target_link_libraries(srcComplexity PUBLIC srcmlxpath)
+
+# Static srcmlxpath library
+add_library(srcmlxpath STATIC srcMLXPathCount.cpp)
+target_include_directories(srcmlxpath PUBLIC ${LIBXML2_INCLUDE_DIR})
+target_link_libraries(srcmlxpath PUBLIC ${LIBXML2_LIBRARY})
 
 # run example
 set(SRCCOMPLEXITY_TESTFILE srcMLXPathCount.cpp.xml)
