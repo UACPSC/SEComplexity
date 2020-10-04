@@ -1,28 +1,20 @@
-# SEComplexity
+# Build for srcComplexity
 
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.14.0)
 
 project(srcComplexity)
 
-# require C++11
-set(CMAKE_CXX_STANDARD 11)
+find_package(LibXml2 REQUIRED)
+message("-- libxml2 include: " ${LIBXML2_INCLUDE_DIR})
+message("-- libxml2 library: " ${LIBXML2_LIBRARY})
 
-# libxml2
-find_package(LIBXML2 REQUIRED)
-
-# srcComplexity program
+# Builds srcComplexity
 add_executable(srcComplexity srcComplexity.cpp srcMLXPathCount.cpp)
-target_include_directories(srcComplexity PRIVATE ${LIBXML2_INCLUDE_DIR})
-target_link_libraries(srcComplexity PRIVATE ${LIBXML2_LIBRARIES})
+target_include_directories(srcComplexity PUBLIC ${LIBXML2_INCLUDE_DIR})
+target_link_libraries(srcComplexity PUBLIC ${LIBXML2_LIBRARY})
 
-# srcMLXPathCount test program
-add_executable(srcMLXPathCount_t srcMLXPathCount_t.cpp srcMLXPathCount.cpp)
-target_include_directories(srcMLXPathCount_t PRIVATE ${LIBXML2_INCLUDE_DIR})
-target_link_libraries(srcMLXPathCount_t PRIVATE ${LIBXML2_LIBRARIES})
-
-add_test(NAME srcMLXPathCount_t COMMAND srcMLXPathCount_t)
-
-# run command on example file
-add_custom_target(run COMMENT "Run srcComplexity on example"
-                      COMMAND ./srcComplexity ${CMAKE_CURRENT_SOURCE_DIR}/srcMLXPathCount.cpp.xml
-                      DEPENDS srcComplexity)
+# run example
+set(SRCCOMPLEXITY_TESTFILE srcMLXPathCount.cpp.xml)
+configure_file(${SRCCOMPLEXITY_TESTFILE} ${SRCCOMPLEXITY_TESTFILE} COPYONLY)
+add_custom_target(run DEPENDS srcComplexity
+                      COMMAND ./srcComplexity ${SRCCOMPLEXITY_TESTFILE})
