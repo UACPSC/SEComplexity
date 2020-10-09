@@ -2,10 +2,9 @@
 
 cmake_minimum_required(VERSION 3.14.0)
 
-project(srcComplexity)
+project(srcComplexity VERSION "0.9.5")
 
 option(LINK_STATIC "Build with static library" OFF)
-message("LINK_STATIC: ${LINK_STATIC}")
 
 find_package(LibXml2 REQUIRED)
 message("-- libxml2 include: " ${LIBXML2_INCLUDE_DIR})
@@ -14,23 +13,28 @@ message("-- libxml2 library: " ${LIBXML2_LIBRARY})
 # Build srcComplexity
 add_executable(srcComplexity srcComplexity.cpp)
 if(LINK_STATIC)
-    message("Static library")
+    message("-- static library")
     target_link_libraries(srcComplexity PUBLIC srcmlxpath)
 else()
-    message("Shared library")
+    message("-- shared library")
     target_link_libraries(srcComplexity PUBLIC srcmlxpath_shared)
 endif()
+install(TARGETS srcComplexity RUNTIME)
 
 # Static srcmlxpath library
 add_library(srcmlxpath STATIC srcMLXPathCount.cpp)
 target_include_directories(srcmlxpath PUBLIC ${LIBXML2_INCLUDE_DIR})
 target_link_libraries(srcmlxpath PUBLIC ${LIBXML2_LIBRARY})
+install(TARGETS srcmlxpath LIBRARY)
 
 # Shared srcmlxpath library
 add_library(srcmlxpath_shared SHARED srcMLXPathCount.cpp)
 target_include_directories(srcmlxpath_shared PUBLIC ${LIBXML2_INCLUDE_DIR})
 target_link_libraries(srcmlxpath_shared PUBLIC ${LIBXML2_LIBRARY})
 set_target_properties(srcmlxpath_shared PROPERTIES OUTPUT_NAME srcmlxpath)
+set_target_properties(srcmlxpath_shared PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(srcmlxpath_shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
+install(TARGETS srcmlxpath_shared LIBRARY)
 
 # run example
 set(SRCCOMPLEXITY_TESTFILE srcMLXPathCount.cpp.xml)
