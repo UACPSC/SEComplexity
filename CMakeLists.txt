@@ -41,3 +41,10 @@ set(SRCCOMPLEXITY_TESTFILE srcMLXPathCount.cpp.xml)
 configure_file(${SRCCOMPLEXITY_TESTFILE} ${SRCCOMPLEXITY_TESTFILE} COPYONLY)
 add_custom_target(run DEPENDS srcComplexity
                       COMMAND ./srcComplexity ${SRCCOMPLEXITY_TESTFILE})
+
+set(CPACK_PACKAGE_NAME "srccomplexity")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_CONTACT "collard@uakron.edu")
+include(CPack)
