@@ -11,6 +11,27 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
+// std::unique_ptr deleter functions for libxml2
+// usage: std::unique<xmlDoc> p(xmlReadMemory);
+// Call p.get() for original pointer
+// Will deallocate automatically at end of std::unique_ptr lifetime
+namespace std {
+    template<>
+    struct default_delete<xmlDoc> {
+        void operator()(xmlDoc* doc) { xmlFreeDoc(doc); }
+    };
+
+    template<>
+    struct default_delete<xmlXPathObject> {
+        void operator()(xmlXPathObject* xpath) { xmlXPathFreeObject(xpath); }
+    };
+
+    template<>
+    struct default_delete<xmlXPathContext> {
+        void operator()(xmlXPathContext* context) { xmlXPathFreeContext(context); }
+    };
+}
+
 /** Count of the result of applying the xpath to the srcML file
  * 
  * XPath expression must result in a numeric, integer result.
@@ -31,12 +52,12 @@ int srcMLXPathCount(const char* srcMLfile, const char* xpath) {
     xmlInitParser();
 
     // open the srcML file with no encoding change and no options
-    std::unique_ptr<xmlDoc, decltype(&xmlFreeDoc)> srcMLdoc(xmlReadFile(srcMLfile, nullptr, 0), xmlFreeDoc);
+    std::unique_ptr<xmlDoc> srcMLdoc(xmlReadFile(srcMLfile, nullptr, 0));
     if (!srcMLdoc)
         return -1;
 
     // create xpath evaluation context
-    std::unique_ptr<xmlXPathContext, decltype(&xmlXPathFreeContext)> xpathCtx(xmlXPathNewContext(srcMLdoc.get()), xmlXPathFreeContext);
+    std::unique_ptr<xmlXPathContext> xpathCtx(xmlXPathNewContext(srcMLdoc.get()));
     if (!xpathCtx)
         return -1;
 
@@ -47,7 +68,7 @@ int srcMLXPathCount(const char* srcMLfile, const char* xpath) {
         return -1;
 
     // evaluate xpath expression
-    std::unique_ptr<xmlXPathObject, decltype(&xmlXPathFreeObject)> xpathResults(xmlXPathEvalExpression(BAD_CAST xpath, xpathCtx.get()), xmlXPathFreeObject);
+    std::unique_ptr<xmlXPathObject> xpathResults(xmlXPathEvalExpression(BAD_CAST xpath, xpathCtx.get()));
     if (!xpathResults)
         return -1;
 
